@@ -1,0 +1,59 @@
+#overlay {
+	position: fixed;
+	display: block;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 2;
+	cursor: pointer;
+	padding-top: 25%;
+}
+
+.vue-select .vs__search::placeholder {
+	color: #6c757d;
+}
+
+.vue-select .vs__dropdown-toggle {
+	height: 38px;
+}
+
+.vue-select-invalid .vs__dropdown-toggle {
+	border-color: #dc3545;
+}
+
+.vue-select-invalid .vs__open-indicator {
+	fill: #dc3545;
+}
+
+body {
+	min-width: 920px;
+	width: auto!important;
+	font-family: "Oracle Sans" !important;
+	background-image: url('./images/redwood_texture.png');
+}
+
+.nav-bar {
+	padding: 32px 48px 32px 16px;
+	min-height: 68px;
+}
+
+.nav-bar-title {
+	font-family: Georgia,'Times New Roman',Times,serif;
+	font-weight: 100;
+	font-size: 32px;
+	line-height: 30px;
+}
+
+.button-color,
+.button-color:hover {
+	background-color: rgb(95, 125, 79);
+	border-color: rgb(95, 125, 79);
+}
+
+.strip-header {
+	background-image: url('./images/header-strip.png');
+	height: 14px;background-size: cover;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Zoom Configuration</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.13.0/dist/bootstrap-vue.min.css">
+	<link rel="stylesheet" href="/zoomIntegrationService/action/resources/configure.css">
+</head>
+
+<body>
+	<div id="app">
+		<b-container>
+			<b-navbar variant="light" class="nav-bar">
+				<b-navbar-brand href="#" class="nav-bar-title">
+					<img src="https://www.zoom.us/zoom.ico" width="30" height="30" class="d-inline-block align-top"
+						alt="Zoom">
+					Zoom Configuration
+				</b-navbar-brand>
+			</b-navbar>
+		</b-container>
+		<b-container>
+			<div class="strip-header"></div>
+		</b-container>
+		<b-container>
+			<b-card title="Zoom Event Register">
+				<hr />
+				<b-form @submit="save" @submit.prevent novalidate>
+					<b-form-group label="Event Type" label-for="eventType" label-class="font-weight-bold">
+						<b-form-radio-group id="eventType" v-model="form.eventType">
+						<b-form-radio value="meetings">Meeting</b-form-radio>
+						<b-form-radio value="webinars">Webinar</b-form-radio>
+						</b-form-radio-group>
+						<b-form-invalid-feedback :state="validation.eventType">
+							Please select an event type.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<b-form-group label="Event ID" label-for="eventId" label-class="font-weight-bold" description="Your Event ID is a 9, 10 or 11-digit
+					number.">
+						<b-form-input id="eventId" type="text" placeholder="Event ID" v-model="form.eventId" v-numeric
+							:state="validation.eventId">
+						</b-form-input>
+						<b-form-invalid-feedback :state="validation.eventId">Incorrect Event ID.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<b-button type="submit" variant="primary" class="float-right button-color">Save</b-button>
+				</b-form>
+			</b-card>
+		</b-container>
+		<b-alert variant="success" show class="position-fixed fixed-top m-0 rounded-0" v-model="success">
+			Successfully saved configuration!
+		</b-alert>
+		<div id="overlay" v-show="loading">
+			<div class="spinner-border"></div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.13.0/dist/bootstrap-vue.min.js"></script>
+	<script src="/zoomIntegrationService/action/resources/configure.js"></script>
+</body>
+
+</html>

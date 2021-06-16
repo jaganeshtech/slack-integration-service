@@ -1,0 +1,24 @@
+{
+	"elements": [
+		{
+			"label": "One Time",
+			"value": "once"
+		},
+		{
+			"label": "Hourly",
+			"value": "hourly"
+		},
+		{
+			"label": "Daily",
+			"value": "daily"
+		},
+		{
+			"label": "Weekly",
+			"value": "weekly"
+		},
+		{
+			"label": "Monthly",
+			"value": "monthly"
+		}
+	]
+}

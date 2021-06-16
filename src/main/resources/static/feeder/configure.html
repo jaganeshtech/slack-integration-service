@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Zoom Configuration</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.13.0/dist/bootstrap-vue.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.13.0/dist/bootstrap-vue-icons.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-select@3.10.1/dist/vue-select.css" />
+	<link rel="stylesheet" href="/zoomIntegrationService/feeder/resources/configure.css" />
+</head>
+
+<body>
+	<div id="app">
+		<b-container>
+			<b-navbar variant="light" class="nav-bar">
+				<b-navbar-brand href="#" class="nav-bar-title">
+					<img src="https://www.zoom.us/zoom.ico" width="30" height="30" class="d-inline-block align-top"
+						alt="Zoom">
+					Zoom Configuration
+				</b-navbar-brand>
+			</b-navbar>
+		</b-container>
+		<b-container>
+			<div class="strip-header"></div>
+		</b-container>
+		<b-container>
+			<b-card title="Zoom Event Attendees">
+				<hr />
+				<b-form @submit="save" @submit.prevent novalidate>
+					<b-form-group label="Event Type" label-for="eventType" label-class="font-weight-bold">
+						<b-form-radio-group id="eventType" v-model="form.eventType">
+						<b-form-radio value="meetings">Meeting</b-form-radio>
+						<b-form-radio value="webinars">Webinar</b-form-radio>
+						</b-form-radio-group>
+						<b-form-invalid-feedback :state="validation.eventType">
+							Please select an event type.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<b-form-group label="Event ID" label-for="eventId" label-class="font-weight-bold" description="Your Event ID is a 9, 10 or 11-digit
+					number.">
+						<b-form-input id="eventId" type="text" placeholder="Event ID" v-model="form.eventId" v-numeric
+							:state="validation.eventId">
+						</b-form-input>
+						<b-form-invalid-feedback :state="validation.eventId">Incorrect Event ID.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<b-form-group label="Map Fields" label-for="mapFields" label-class="font-weight-bold">
+						<table class="table" id="mapFields">
+							<thead class="thead-light">
+								<tr>
+									<th style="width: 48%" class="pl-3">Fields from Zoom</th>
+									<th style="width: 48%" class="pl-3">Map Contact Fields in Eloqua</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(mapping, index) in form.fieldMappings">
+									<td>
+										<v-select :options="filteredZoomFields" class="vue-select" :clearable="false"
+											v-model="mapping.zoom" label="name"
+											:class="{ 'vue-select-invalid' : mapping.zoom.valid === false }">
+										</v-select>
+										<b-form-invalid-feedback :state="mapping.zoom.valid">
+											Please select a value.
+										</b-form-invalid-feedback>
+									</td>
+									<td>
+										<v-select :options="lists.eloquaFields" class="vue-select" :clearable="false"
+											v-model="mapping.eloqua" label="name"
+											:class="{ 'vue-select-invalid' : mapping.eloqua.valid === false }">
+										</v-select>
+										<b-form-invalid-feedback :state="mapping.eloqua.valid">
+											Please select a value.
+										</b-form-invalid-feedback>
+									</td>
+									<td class="align-middle">
+										<span>
+											<b-icon-trash variant="info" @click="deleteMapping(index)"></b-icon-trash>
+										</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<b-form-invalid-feedback :state="validation.fieldMappings">
+							Please add at least one mapping.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<b-form-group v-show="showAddMappingLink">
+						<a href="#" class="text-info" @click="addMapping" @click.prevent>
+							<b-icon-plus-circle variant="info"></b-icon-plus-circle>&nbsp;Add Field Mapping
+						</a>
+					</b-form-group>
+					<b-form-group label="Sync Frequency" label-for="syncFrequency" label-class="font-weight-bold">
+						<v-select id="syncFrequency" :options="lists.syncFrequencies" :reduce="option => option.value"
+							:clearable="false" v-model="form.syncConfiguration.frequency" placeholder="Sync Frequency"
+							:class="{ 'vue-select-invalid' : validation.syncConfiguration.frequency === false }"
+							class="vue-select">
+						</v-select>
+						<b-form-invalid-feedback :state="validation.syncConfiguration.frequency">
+							Please select a sync frequency.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<div class="form-row">
+						<div class="col">
+							<b-form-group label="Sync Start Date" label-for="syncStartDate"
+								label-class="font-weight-bold">
+								<b-form-datepicker id="syncStartDate" v-model="form.syncConfiguration.startDate"
+									:state="validation.syncConfiguration.startDate" placeholder="Sync Start Date"
+									no-flip :min="minSyncDate">
+								</b-form-datepicker>
+								<b-form-invalid-feedback :state="validation.syncConfiguration.startDate">
+									Please select a sync start date.
+								</b-form-invalid-feedback>
+							</b-form-group>
+						</div>
+						<div class="col">
+							<b-form-group label="Sync Start Time" label-for="syncStartTime"
+								label-class="font-weight-bold">
+								<b-form-timepicker id="syncStartTime" v-model="form.syncConfiguration.startTime"
+									:state="validation.syncConfiguration.startTime" placeholder="Sync Start Time"
+									no-flip minutes-step="5" locale="en">
+								</b-form-timepicker>
+								<b-form-invalid-feedback :state="validation.syncConfiguration.startTime">
+									Please select a sync start time.
+								</b-form-invalid-feedback>
+							</b-form-group>
+						</div>
+					</div>
+					<div class="form-row" v-show="showSyncEndDateTime">
+						<div class="col">
+							<b-form-group label="Sync End Date" label-for="syncEndDate" label-class="font-weight-bold">
+								<b-form-datepicker id="syncEndDate" v-model="form.syncConfiguration.endDate"
+									:state="validation.syncConfiguration.endDate" placeholder="Sync End Date" no-flip
+									:min="minSyncDate">
+								</b-form-datepicker>
+								<b-form-invalid-feedback :state="validation.syncConfiguration.endDate">
+									Please select a sync end date.
+								</b-form-invalid-feedback>
+							</b-form-group>
+						</div>
+						<div class="col">
+							<b-form-group label="Sync End Time" label-for="syncEndTime" label-class="font-weight-bold">
+								<b-form-timepicker id="syncEndTime" v-model="form.syncConfiguration.endTime"
+									:state="validation.syncConfiguration.endTime" placeholder="Sync End Time" no-flip
+									minutes-step="5" locale="en">
+								</b-form-timepicker>
+								<b-form-invalid-feedback :state="validation.syncConfiguration.endTime">
+									Please select a sync end time.
+								</b-form-invalid-feedback>
+							</b-form-group>
+						</div>
+					</div>
+					<b-form-group label="Time Zone" label-for="syncTimeZone" label-class="font-weight-bold">
+						<v-select id="syncTimeZone" :options="lists.timeZones" :reduce="option => option.value"
+							:clearable="false" v-model="form.syncConfiguration.timeZone" placeholder="Time Zone"
+							:class="{ 'vue-select-invalid': validation.syncConfiguration.timeZone === false }"
+							class="vue-select">
+						</v-select>
+						<b-form-invalid-feedback :state="validation.syncConfiguration.timeZone">
+							Please select a time zone.
+						</b-form-invalid-feedback>
+					</b-form-group>
+					<b-button type="submit" variant="primary" class="float-right button-color">Save</b-button>
+				</b-form>
+			</b-card>
+		</b-container>
+		<b-alert variant="success" show class="position-fixed fixed-top m-0 rounded-0" v-model="success">
+			Successfully saved configuration!
+		</b-alert>
+		<div id="overlay" v-show="loading">
+			<div class="spinner-border"></div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.13.0/dist/bootstrap-vue.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.13.0/dist/bootstrap-vue-icons.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue-select@3.10.1/dist/vue-select.min.js"></script>
+	<script src="/zoomIntegrationService/feeder/resources/configure.js"></script>
+</body>
+
+</html>

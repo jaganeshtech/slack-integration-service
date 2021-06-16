@@ -1,0 +1,24 @@
+{
+	"elements": [
+		{
+			"name": "Email",
+			"internalName": "user_email"
+		},
+		{
+			"name": "Name",
+			"internalName": "name"
+		},
+		{
+			"name": "Join Time",
+			"internalName": "join_time"
+		},
+		{
+			"name": "Leave Time",
+			"internalName": "leave_time"
+		},
+		{
+			"name": "Duration",
+			"internalName": "duration"
+		}
+	]
+}
